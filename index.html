@@ -703,7 +703,7 @@
             .search-title { font-size: 24px; text-align: center; max-width: 100%; }
             .search-input { font-size: 18px; padding: 8px 15px; }
             .search-button { width: 100px; height: 40px; font-size: 18px; }
-            .history-sidebar { display: none; }
+            .history-sidebar { display: none!important; }
             .mobile-history-dropdown { display: none; }
             .tooltip { left: 35px; top: -50px; width: 160px; padding: 8px 10px; }
             .tooltip-title { font-size: 14px; }
@@ -855,11 +855,33 @@
         }
 
         @media screen and (max-width: 600px) {
-            .inbox-table td, .activities-table td {
-                border-bottom: 1px solid #ddd;
+            .inbox-table thead,
+            .activities-table thead {
+                display: none;
+            }
+
+            .inbox-table td,
+            .activities-table td {
                 display: block;
+                text-align: left;
+                padding: 8px 10px;
+                border-bottom: 1px solid #ddd;
                 font-size: 13px;
-                text-align: right;
+            }
+
+            .inbox-table td:before,
+            .activities-table td:before {
+                content: attr(data-label) ": ";
+                font-weight: bold;
+                display: inline-block;
+                min-width: 120px;
+                color: #128C88;
+            }
+
+            .inbox-table td[data-label=""]:before,
+            .activities-table td[data-label=""]:before {
+                content: "";
+                min-width: 0;
             }
         }
 
