@@ -1,0 +1,1071 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Guided Search Page</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600&family=Arial:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #128C88;
+            --primary-inverse: #FFFFFF;
+            --bg-color: #FFFFFF;
+            --header-border: #E8E8E8;
+            --text-main: #000000;
+            --text-secondary: #676767;
+            --text-dark: #1E2939;
+            --input-bg: #FAFAFA;
+            --input-border-gradient: linear-gradient(132deg, #04ECD3 1%, rgba(181, 51, 197, 0.69) 100%);
+            --input-shadow: 0px 0px 5.4px 0px #17D9D1;
+            --overlay-shadow: 0px 12px 23.5px 0px rgba(0, 0, 0, 0.08);
+            --filter-bg-active: #128C88;
+            --filter-bg-inactive: rgba(18, 140, 136, 0.05);
+            --divider-color: #E5E7EB;
+            --tooltip-bg: #128C88;
+            --tooltip-tag-bg: #EBFFFE;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            overflow-x: hidden;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 24px;
+            border-bottom: 1px solid var(--header-border);
+            height: 80px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background: white;
+            z-index: 1000;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 22px;
+        }
+
+        .breadcrumb-container img {
+            height: 56px;
+        }
+
+        .menu-icon img {
+            height: 14px;
+            cursor: pointer;
+            transition: filter 0.3s ease;
+        }
+
+        .menu-icon:hover img {
+            filter: brightness(0) saturate(100%) invert(41%) sepia(89%) saturate(361%) hue-rotate(146deg) brightness(91%) contrast(85%);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 22px;
+            align-items: center;
+        }
+
+        .header-center {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 0 20px;
+        }
+
+        .search-input-wrapper {
+            width: 100%;
+            max-width: 600px;
+            position: relative;
+            background: var(--input-bg);
+            border-radius: 50px;
+            padding: 1px;
+            background-image: var(--input-border-gradient);
+            box-shadow: var(--input-shadow);
+            z-index: 20;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .search-input-wrapper:hover {
+            transform: scale(1.01);
+        }
+
+        .search-input-container {
+            background: var(--input-bg);
+            border-radius: 50px;
+            display: flex;
+            align-items: center;
+            padding: 5px 15px;
+            height: 45px;
+        }
+
+        .search-input {
+            flex: 1;
+            border: none;
+            background: transparent;
+            font-size: 16px;
+            padding: 5px 10px;
+            outline: none;
+            color: var(--text-main);
+            font-family: 'Roboto', sans-serif;
+        }
+
+        .search-input::placeholder {
+            color: #000000;
+            opacity: 0.5;
+        }
+
+        .search-button {
+            background-color: var(--primary-color);
+            color: var(--primary-inverse);
+            border: 1px solid #F0F0F0;
+            border-radius: 100px;
+            padding: 0;
+            width: 100px;
+            height: 35px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .search-button:hover {
+            background-color: #0e6e6b;
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(18, 140, 136, 0.3);
+        }
+
+        .nav-item {
+            font-size: 14px;
+            cursor: pointer;
+            transition: color 0.3s;
+            font-weight: 600;
+            color: #128C88;
+            text-decoration: none;
+        }
+
+        .nav-item:not(.active) {
+            font-weight: 400;
+            color: #000000;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .notification-container {
+            position: relative;
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+        }
+
+        .notification-bell {
+            width: 18.74px;
+            height: 19.22px;
+        }
+
+        .notification-dot {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 12px;
+            height: 12px;
+            background-color: #FF0000;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-size: 10px;
+        }
+
+        .user-info {
+            color: #158D89;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        main {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-top: 100px;
+            min-height: 100vh;
+            position: relative;
+            padding-left: 5%;
+            padding-right: 5%;
+        }
+
+        .search-summary {
+            width: 100%;
+            max-width: 1454px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            z-index: 10;
+            position: relative;
+        }
+
+        .summary-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: var(--primary-color);
+            text-align: center;
+        }
+
+        .tags-section {
+            display: flex;
+            gap: 40px;
+            width: 100%;
+            max-width: 1000px;
+            justify-content: center;
+        }
+
+        .tags-column {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        #selected-tags {
+           /*  display: flex; */
+            gap: 5px;
+        }
+
+        .tags-column h3 {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-dark);
+            text-align: center;
+        }
+
+        .tag-btn {
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            border: 1px solid #128C88;
+            background: white;
+            color: #128C88;
+            transition: all 0.3s ease;
+        }
+
+        .tag-btn.selected {
+            background: #128C88;
+            color: white;
+        }
+
+        .tag-btn:hover:not(.selected) {
+            background: rgba(18, 140, 136, 0.1);
+        }
+
+        .tag-count {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 20px;
+            height: 20px;
+            background-color: #128C88;
+            color: white;
+            border-radius: 50%;
+            font-size: 12px;
+            font-weight: 600;
+            margin-left: 8px;
+        }
+
+        .tag-btn.selected .tag-count {
+            background-color: white;
+            color: #128C88;
+        }
+
+        .results-table {
+            width: 100%;
+            max-width: 1454px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: var(--overlay-shadow);
+            overflow: hidden;
+            margin-top: 40px;
+        }
+
+        .results-table table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .results-table th {
+            background: #128C88;
+            color: white;
+            padding: 15px 20px;
+            text-align: left;
+            font-weight: 500;
+            cursor: pointer;
+            user-select: none;
+            position: relative;
+        }
+
+        .results-table th::after {
+            content: '▼';
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: white;
+            font-size: 12px;
+        }
+
+        .results-table th.sort-asc::after {
+            content: '▲';
+        }
+
+        .results-table th.sort-desc::after {
+            content: '▼';
+        }
+
+        .results-table td {
+            padding: 15px 20px;
+            border-bottom: 1px solid #E5E7EB;
+            color: var(--text-dark);
+        }
+
+        .results-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .pagination {
+            width: 100%;
+            max-width: 1454px;
+            margin: 20px auto 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 14px;
+            color: rgba(0, 0, 0, 0.85);
+        }
+
+        .pagination-controls {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .page-btn {
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid #128C88;
+            border-radius: 2px;
+            cursor: pointer;
+        }
+
+        .page-btn.active {
+            background: #128C88;
+            color: white;
+        }
+
+        .background-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .shape {
+            position: absolute;
+            background: rgba(18, 140, 136, 0.1);
+            border-radius: 50%;
+            filter: blur(50px);
+        }
+
+        .shape1 {
+            width: 400px;
+            height: 400px;
+            top: 5%;
+            left: 5%;
+            animation: moveHorizontal 40s ease infinite;
+        }
+
+        .shape2 {
+            width: 300px;
+            height: 300px;
+            top: 40%;
+            right: 10%;
+            animation: moveInCircle 20s reverse infinite;
+        }
+
+        .shape3 {
+            width: 250px;
+            height: 250px;
+            bottom: 15%;
+            left: 40%;
+            animation: moveVertical 30s ease infinite;
+        }
+
+        .shape4 {
+            width: 350px;
+            height: 350px;
+            top: 20%;
+            right: 5%;
+            animation: moveInCircle 40s linear infinite;
+        }
+
+        .shape5 {
+            width: 280px;
+            height: 280px;
+            bottom: 5%;
+            right: 30%;
+            animation: moveHorizontal 50s ease infinite;
+        }
+
+        @keyframes moveHorizontal {
+            0% { transform: translateX(-50%) translateY(-10%); }
+            50% { transform: translateX(50%) translateY(10%); }
+            100% { transform: translateX(-50%) translateY(-10%); }
+        }
+
+        @keyframes moveInCircle {
+            0% { transform: rotate(0deg); }
+            50% { transform: rotate(180deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes moveVertical {
+            0% { transform: translateY(-50%); }
+            50% { transform: translateY(50%); }
+            100% { transform: translateY(-50%); }
+        }
+
+        .mega-menu-container {
+            position: relative;
+        }
+
+        .mega-menu {
+            position: absolute;
+            top: calc(100% + 10px);
+            left: -100px;
+            background-color: #FFFFFF;
+            border-radius: 24px;
+            box-shadow: 23px 41px 41.3px 0px rgba(0, 0, 0, 0.05);
+            padding: 12px;
+            width: 1368px;
+            display: none;
+            z-index: 1001;
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: opacity 0.3s, transform 0.3s;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .mega-menu.visible {
+            display: flex;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .mobile-mega-menu {
+            display: none;
+            position: fixed;
+            top: 80px;
+            left: 0;
+            width: 100%;
+            background: white;
+            border-bottom: 1px solid var(--header-border);
+            z-index: 1001;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            max-height: 60vh;
+            overflow-y: auto;
+        }
+
+        @media (max-width: 768px) { .mobile-mega-menu { top: 70px; } }
+        @media (max-width: 480px) { .mobile-mega-menu { top: 60px; } }
+
+        .mobile-mega-menu.visible { display: block; }
+
+        .mobile-mega-menu-item {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 16px;
+            border-bottom: 1px solid #f0f0f0;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        .mobile-mega-menu-item:hover { background-color: #f5f5f5; }
+        .mobile-mega-menu-item:last-child { border-bottom: none; }
+        .mobile-mega-menu-item.active { background-color: #F4FBF9; }
+
+        .mobile-mega-menu-icon {
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: #FFFFFF;
+            border: 1px solid #128C88;
+            flex-shrink: 0;
+        }
+
+        .mobile-mega-menu-icon img { width: 16px; height: 16px; }
+
+        .mobile-mega-menu-item.active .mobile-mega-menu-icon,
+        .mobile-mega-menu-item:hover .mobile-mega-menu-icon { background: #128C88; }
+
+        .mobile-mega-menu-item.active .mobile-mega-menu-icon img,
+        .mobile-mega-menu-item:hover .mobile-mega-menu-icon img { filter: brightness(0) invert(1); }
+
+        .mobile-mega-menu-content { flex: 1; }
+        .mobile-mega-menu-title { font-family: 'Arial', sans-serif; font-weight: 700; font-size: 16px; color: #1E293B; margin-bottom: 4px; }
+        .mobile-mega-menu-description { font-family: 'Arial', sans-serif; font-weight: 400; font-size: 12px; color: #575757; line-height: 1.4; }
+
+        .mega-menu-card {
+            width: 254.4px;
+            padding: 32px;
+            border-radius: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 32px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            background: #FFFFFF;
+        }
+
+        .mega-menu-card:hover { background: #F4FBF9; box-shadow: 0px 10px 15px -3px rgba(163, 163, 163, 0.46); }
+        .mega-menu-card.active { background: #F4FBF9; }
+
+        .mega-menu-card-icon {
+            width: 72px;
+            height: 72px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: #FFFFFF;
+            border: 1px solid #128C88;
+            box-shadow: 0px 10px 15px -3px rgba(163, 163, 163, 0.46);
+        }
+
+        .mega-menu-card-icon img { width: 72px; height: 72px; }
+
+        .mega-menu-card.active .mega-menu-card-icon,
+        .mega-menu-card:hover .mega-menu-card-icon { background: #128C88; }
+
+        .mega-menu-card-content { display: flex; flex-direction: column; gap: 16px; }
+        .mega-menu-card-title { font-family: 'Arial', sans-serif; font-weight: 700; font-size: 18px; line-height: 1.3; color: #1E293B; }
+        .mega-menu-card-description { font-family: 'Arial', sans-serif; font-weight: 400; font-size: 14px; line-height: 1.6; color: #575757; }
+
+        .mega-menu-card-arrow {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            width: 16px;
+            height: 16px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .mega-menu-card:hover .mega-menu-card-arrow,
+        .mega-menu-card.active .mega-menu-card-arrow { opacity: 1; }
+
+        .mega-menu-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.3);
+            display: none;
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .mega-menu-overlay.visible { display: block; opacity: 1; }
+
+        @media (max-width: 768px) {
+            .tags-section {
+                flex-direction: column;
+                gap: 20px;
+            }
+            .summary-title {
+                font-size: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="background-animation">
+        <div class="shape shape1"></div>
+        <div class="shape shape2"></div>
+        <div class="shape shape3"></div>
+        <div class="shape shape4"></div>
+        <div class="shape shape5"></div>
+    </div>
+
+    <header>
+        <div class="header-left">
+            <a href="index.html" class="breadcrumb-container">
+                <img src="assets/breadcrumb.svg" alt="SFC Logo">
+            </a>
+            <div class="mega-menu-container">
+                <div class="menu-icon" id="menuIcon">
+                    <img src="assets/menu_icon.svg" alt="Menu">
+                </div>
+                <div class="mega-menu-overlay" id="megaMenuOverlay"></div>
+                <div class="mega-menu" id="megaMenu">
+                    <div class="mega-menu-card active">
+                        <div class="mega-menu-card-icon"><img src="assets/ce_enquiry.svg" alt="CE Enquiry"></div>
+                        <div class="mega-menu-card-content">
+                            <div class="mega-menu-card-title">CE Enquiry</div>
+                            <div class="mega-menu-card-description">Search and view existing corporate enquiries.</div>
+                        </div>
+                    </div>
+                    <div class="mega-menu-card">
+                        <div class="mega-menu-card-icon"><img src="assets/ce_creation.svg" alt="CE Creation"></div>
+                        <div class="mega-menu-card-content">
+                            <div class="mega-menu-card-title">CE Creation</div>
+                            <div class="mega-menu-card-description">Initiate and create new corporate enquiry requests.</div>
+                        </div>
+                    </div>
+                    <div class="mega-menu-card">
+                        <div class="mega-menu-card-icon"><img src="assets/ce_upload.svg" alt="CE Upload"></div>
+                        <div class="mega-menu-card-content">
+                            <div class="mega-menu-card-title">CE Upload for Stock, ELI & Bond/Notes</div>
+                            <div class="mega-menu-card-description">Upload supporting documents for Stock, ELI, and Bonds.</div>
+                        </div>
+                    </div>
+                    <div class="mega-menu-card">
+                        <div class="mega-menu-card-icon"><img src="assets/ce_report.svg" alt="CE Report"></div>
+                        <div class="mega-menu-card-content">
+                            <div class="mega-menu-card-title">Request/View CE Report</div>
+                            <div class="mega-menu-card-description">Access and generate detailed corporate enquiry reports.</div>
+                        </div>
+                    </div>
+                    <div class="mega-menu-card">
+                        <div class="mega-menu-card-icon"><img src="assets/advanced_address.svg" alt="Advanced Address"></div>
+                        <div class="mega-menu-card-content">
+                            <div class="mega-menu-card-title">Advanced Address Enquiry</div>
+                            <div class="mega-menu-card-description">Comprehensive search tool for global addresses.</div>
+                        </div>
+                    </div>
+                    <div class="mega-menu-card">
+                        <div class="mega-menu-card-icon"><img src="assets/bank_table.svg" alt="Bank Table"></div>
+                        <div class="mega-menu-card-content">
+                            <div class="mega-menu-card-title">Bank Table</div>
+                            <div class="mega-menu-card-description">Maintenance and viewing of the central bank records.</div>
+                        </div>
+                    </div>
+                    <div class="mega-menu-card">
+                        <div class="mega-menu-card-icon"><img src="assets/nationality_table.svg" alt="Nationality Table"></div>
+                        <div class="mega-menu-card-content">
+                            <div class="mega-menu-card-title">Nationality Table Enquiry</div>
+                            <div class="mega-menu-card-description">Query and manage nationality reference data.</div>
+                        </div>
+                    </div>
+                    <div class="mega-menu-card">
+                        <div class="mega-menu-card-icon"><img src="assets/quick_reference.svg" alt="Quick Reference"></div>
+                        <div class="mega-menu-card-content">
+                            <div class="mega-menu-card-title">Quick Reference</div>
+                            <div class="mega-menu-card-description">Instant access to frequently used guidelines.</div>
+                        </div>
+                    </div>
+                    <div class="mega-menu-card">
+                        <div class="mega-menu-card-icon"><img src="assets/contact_list.svg" alt="Contact List"></div>
+                        <div class="mega-menu-card-content">
+                            <div class="mega-menu-card-title">Contact List</div>
+                            <div class="mega-menu-card-description">Direct directory for department support.</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="mobile-mega-menu" id="mobileMegaMenu">
+                    <div class="mobile-mega-menu-item" id="mobileHome">
+                        <div class="mobile-mega-menu-icon"><img src="assets/ce_enquiry.svg" alt="CE Enquiry"></div>
+                        <div class="mobile-mega-menu-content">
+                            <div class="mobile-mega-menu-title">Home</div>
+                            <div class="mobile-mega-menu-description">Back to Home Landing page</div>
+                        </div>
+                    </div>
+                    <div class="mobile-mega-menu-item" id="mobileDashboard">
+                        <div class="mobile-mega-menu-icon"><img src="assets/ce_enquiry.svg" alt="CE Enquiry"></div>
+                        <div class="mobile-mega-menu-content">
+                            <div class="mobile-mega-menu-title">Dashboard</div>
+                            <div class="mobile-mega-menu-description">All your stats at a quick glance</div>
+                        </div>
+                    </div>
+                    <div class="mobile-mega-menu-item">
+                        <div class="mobile-mega-menu-icon"><img src="assets/ce_enquiry.svg" alt="CE Enquiry"></div>
+                        <div class="mobile-mega-menu-content">
+                            <div class="mobile-mega-menu-title">CE Enquiry</div>
+                            <div class="mobile-mega-menu-description">Search and view existing corporate enquiries.</div>
+                        </div>
+                    </div>
+                    <div class="mobile-mega-menu-item">
+                        <div class="mobile-mega-menu-icon"><img src="assets/ce_creation.svg" alt="CE Creation"></div>
+                        <div class="mobile-mega-menu-content">
+                            <div class="mobile-mega-menu-title">CE Creation</div>
+                            <div class="mobile-mega-menu-description">Initiate and create new corporate enquiry requests.</div>
+                        </div>
+                    </div>
+                    <div class="mobile-mega-menu-item">
+                        <div class="mobile-mega-menu-icon"><img src="assets/ce_upload.svg" alt="CE Upload"></div>
+                        <div class="mobile-mega-menu-content">
+                            <div class="mobile-mega-menu-title">CE Upload for Stock, ELI & Bond/Notes</div>
+                            <div class="mobile-mega-menu-description">Upload supporting documents for Stock, ELI, and Bonds.</div>
+                        </div>
+                    </div>
+                    <div class="mobile-mega-menu-item">
+                        <div class="mobile-mega-menu-icon"><img src="assets/ce_report.svg" alt="CE Report"></div>
+                        <div class="mobile-mega-menu-content">
+                            <div class="mobile-mega-menu-title">Request/View CE Report</div>
+                            <div class="mobile-mega-menu-description">Access and generate detailed corporate enquiry reports.</div>
+                        </div>
+                    </div>
+                    <div class="mobile-mega-menu-item">
+                        <div class="mobile-mega-menu-icon"><img src="assets/advanced_address.svg" alt="Advanced Address"></div>
+                        <div class="mobile-mega-menu-content">
+                            <div class="mobile-mega-menu-title">Advanced Address Enquiry</div>
+                            <div class="mobile-mega-menu-description">Comprehensive search tool for global addresses.</div>
+                        </div>
+                    </div>
+                    <div class="mobile-mega-menu-item">
+                        <div class="mobile-mega-menu-icon"><img src="assets/bank_table.svg" alt="Bank Table"></div>
+                        <div class="mobile-mega-menu-content">
+                            <div class="mobile-mega-menu-title">Bank Table</div>
+                            <div class="mobile-mega-menu-description">Maintenance and viewing of the central bank records.</div>
+                        </div>
+                    </div>
+                    <div class="mobile-mega-menu-item">
+                        <div class="mega-menu-card-icon"><img src="assets/nationality_table.svg" alt="Nationality Table"></div>
+                        <div class="mobile-mega-menu-content">
+                            <div class="mobile-mega-menu-title">Nationality Table Enquiry</div>
+                            <div class="mobile-mega-menu-description">Query and manage nationality reference data.</div>
+                        </div>
+                    </div>
+                    <div class="mobile-mega-menu-item">
+                        <div class="mobile-mega-menu-icon"><img src="assets/quick_reference.svg" alt="Quick Reference"></div>
+                        <div class="mobile-mega-menu-content">
+                            <div class="mobile-mega-menu-title">Quick Reference</div>
+                            <div class="mobile-mega-menu-description">Instant access to frequently used guidelines.</div>
+                        </div>
+                    </div>
+                    <div class="mobile-mega-menu-item">
+                        <div class="mobile-mega-menu-icon"><img src="assets/contact_list.svg" alt="Contact List"></div>
+                        <div class="mobile-mega-menu-content">
+                            <div class="mobile-mega-menu-title">Contact List</div>
+                            <div class="mobile-mega-menu-description">Direct directory for department support.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <nav class="nav-links">
+                <a href="index.html" class="nav-item">Home</a>
+                <a href="dashboard.html" class="nav-item">Dashboard</a>
+            </nav>
+        </div>
+        <div class="header-center">
+            <div class="search-input-wrapper">
+                <div class="search-input-container">
+                    <input type="text" class="search-input" id="searchInput" placeholder="Search entities by name, reference number, or type...">
+                    <button class="search-button">Search</button>
+                </div>
+            </div>
+        </div>
+        <div class="header-right">
+            <div class="notification-container">
+                <img src="assets/notification_bell.svg" class="notification-bell" alt="Notifications">
+                <div class="notification-dot">2</div>
+            </div>
+            <div class="user-info">General User</div>
+        </div>
+    </header>
+
+    <main>
+        <section class="search-summary">
+            <h1 class="summary-title">AI understands your question is: "Looking for HSBC bank"</h1>
+            <p style="font-size: 16px; color: var(--text-secondary); text-align: left; margin: 0 0 20px;"><b>AI-Enhanced Tag Filtering </b>Use AI to identify the closest matching tags from search results, then precisely filter for accuracy</p>
+            <div class="tags-section">
+                <div class="tags-column">
+                    <h3>AI Selected Tags (Selected)</h3>
+                    <div id="selected-tags">
+                        <button class="tag-btn selected" data-tag="Business">Business</button>
+                        <button class="tag-btn" data-tag="Listed Securities">Listed Securities</button>
+                        <button class="tag-btn" data-tag="Overseas Listed Securities">Overseas Listed Securities</button>
+                        <button class="tag-btn" data-tag="Individual">Individual</button>
+                        <button class="tag-btn" data-tag="All">All</button>
+                    </div>
+                </div>
+                <div class="tags-column">
+                    <h3>Other Possible Tags</h3>
+                    <div id="unselected-tags">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <div class="results-table">
+            <table id="results-table-sortable">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Type</th>
+                        <th>Reference</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody id="results-body">
+                    <tr>
+                        <td>HSBC Holdings plc</td>
+                        <td>Business</td>
+                        <td>0005.HK</td>
+                        <td>Major international banking and financial services company</td>
+                    </tr>
+                    <tr>
+                        <td>Lion Bank in Hong Kong</td>
+                        <td>Business</td>
+                        <td>LBK001</td>
+                        <td>Banking services in Hong Kong</td>
+                    </tr>
+                    <tr>
+                        <td>HSBC Bank (China)</td>
+                        <td>Listed Securities</td>
+                        <td>HSBC.CN</td>
+                        <td>HSBC operations in China</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="pagination">
+            <span id="record-count">Search Record: 3</span>
+            <div class="pagination-controls">
+                <span>Total 1 items</span><div class="page-btn"><</div><div class="page-btn active">1</div><div class="page-btn">></div>
+                <div style="margin-left: 10px;">1 / page</div>
+                <span>Go to</span><input type="number" min="1" placeholder="1" style="border: 1px solid #D9D9D9; border-radius: 2px; width: 44px; height: 24px; text-align: center;">
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Get query parameter
+        const urlParams = new URLSearchParams(window.location.search);
+        const query = urlParams.get('query') || 'Looking for HSBC bank';
+        document.querySelector('.summary-title').textContent = `AI understands your question is: "${query}"`;
+
+        const searchInput = document.getElementById('searchInput');
+        const searchButton = document.querySelector('.search-button');
+
+        function performSearch() {
+            const query = searchInput.value.trim();
+            if (query) {
+                window.location.href = `search_result.html?query=${encodeURIComponent(query)}`;
+            }
+        }
+
+        searchInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                performSearch();
+            }
+        });
+
+        searchButton.addEventListener('click', performSearch);
+
+        const menuIcon = document.getElementById('menuIcon');
+        const megaMenu = document.getElementById('megaMenu');
+        const mobileMegaMenu = document.getElementById('mobileMegaMenu');
+        const megaMenuOverlay = document.getElementById('megaMenuOverlay');
+
+        let isMegaMenuOpen = false;
+        function toggleMegaMenu() {
+            isMegaMenuOpen = !isMegaMenuOpen;
+            const isMobile = window.innerWidth <= 768;
+            if (isMobile) {
+                mobileMegaMenu.classList.toggle('visible', isMegaMenuOpen);
+            } else {
+                megaMenu.classList.toggle('visible', isMegaMenuOpen);
+                megaMenuOverlay.classList.toggle('visible', isMegaMenuOpen);
+            }
+        }
+
+        menuIcon.addEventListener('click', (e) => { e.stopPropagation(); toggleMegaMenu(); });
+        megaMenuOverlay.addEventListener('click', toggleMegaMenu);
+
+        document.querySelectorAll('.mega-menu-card, .mobile-mega-menu-item').forEach(item => {
+            item.addEventListener('click', () => {
+                document.querySelectorAll('.mega-menu-card, .mobile-mega-menu-item').forEach(i => i.classList.remove('active'));
+                item.classList.add('active');
+                if (item.id === 'mobileDashboard') {
+                    window.location.href = 'dashboard.html';
+                } else if (item.id === 'mobileHome') {
+                    window.location.href = 'index.html';
+                }
+                setTimeout(toggleMegaMenu, 200);
+            });
+        });
+
+        document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && isMegaMenuOpen) toggleMegaMenu(); });
+
+        window.addEventListener('resize', () => {
+            if (isMegaMenuOpen) {
+                const isMobile = window.innerWidth <= 768;
+                mobileMegaMenu.classList.toggle('visible', isMobile);
+                megaMenu.classList.toggle('visible', !isMobile);
+                megaMenuOverlay.classList.toggle('visible', !isMobile);
+            }
+        });
+
+        const selectedTagsContainer = document.getElementById('selected-tags');
+        const unselectedTagsContainer = document.getElementById('unselected-tags');
+        const resultsBody = document.getElementById('results-body');
+
+        // Mock data
+        const allResults = [
+            { name: 'HSBC Holdings plc', type: 'Business', ref: '0005.HK', desc: 'Major international banking and financial services company' },
+            { name: 'Lion Bank in Hong Kong', type: 'Business', ref: 'LBK001', desc: 'Banking services in Hong Kong' },
+            { name: 'HSBC Bank (China)', type: 'Listed Securities', ref: 'HSBC.CN', desc: 'HSBC operations in China' },
+            { name: 'John Smith', type: 'Individual', ref: 'IND123', desc: 'Individual investor' },
+            { name: 'Overseas HSBC Corp', type: 'Overseas Listed Securities', ref: 'OHSBC', desc: 'Overseas HSBC operations' },
+            { name: 'General Entity', type: 'All', ref: 'GEN001', desc: 'General entity for testing' }
+        ];
+
+        // Calculate tag counts
+        const tagCounts = {};
+        tagCounts['All'] = allResults.length;
+        allResults.forEach(result => {
+            tagCounts[result.type] = (tagCounts[result.type] || 0) + 1;
+        });
+
+        let selectedTags = ['Business'];
+
+        function addCountsToButtons() {
+            document.querySelectorAll('.tag-btn').forEach(btn => {
+                const tag = btn.getAttribute('data-tag');
+                const count = tagCounts[tag] || 0;
+                // Remove existing count if any
+                const existingCount = btn.querySelector('.tag-count');
+                if (existingCount) existingCount.remove();
+                const countSpan = document.createElement('span');
+                countSpan.className = 'tag-count';
+                countSpan.textContent = count;
+                btn.appendChild(countSpan);
+            });
+        }
+
+        function updateResults() {
+            const filteredResults = allResults.filter(result => selectedTags.includes(result.type) || selectedTags.includes('All'));
+            resultsBody.innerHTML = filteredResults.map(result => `
+                <tr>
+                    <td onclick="window.location.href='profile.html'" style="cursor: pointer; text-decoration: underline; color: #128C88;">${result.name}</td>
+                    <td>${result.type}</td>
+                    <td>${result.ref}</td>
+                    <td>${result.desc}</td>
+                </tr>
+            `).join('');
+
+            document.getElementById('record-count').textContent = `Search Record: ${filteredResults.length}`;
+
+            // Save to localStorage
+            localStorage.setItem('searchTagRecord', JSON.stringify(selectedTags));
+        }
+
+        function toggleTag(tag, btn) {
+            if (selectedTags.includes(tag)) {
+                selectedTags = selectedTags.filter(t => t !== tag);
+                btn.classList.remove('selected');
+                unselectedTagsContainer.appendChild(btn);
+            } else {
+                selectedTags.push(tag);
+                btn.classList.add('selected');
+                selectedTagsContainer.appendChild(btn);
+            }
+            updateResults();
+        }
+
+        // Event listeners for tags
+        document.querySelectorAll('.tag-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const tag = btn.getAttribute('data-tag');
+                toggleTag(tag, btn);
+            });
+        });
+
+        // Load from localStorage if exists
+        const savedTags = localStorage.getItem('searchTagRecord');
+        if (savedTags) {
+            selectedTags = JSON.parse(savedTags);
+            document.querySelectorAll('.tag-btn').forEach(btn => {
+                const tag = btn.getAttribute('data-tag');
+                if (selectedTags.includes(tag)) {
+                    btn.classList.add('selected');
+                    selectedTagsContainer.appendChild(btn);
+                } else {
+                    btn.classList.remove('selected');
+                    unselectedTagsContainer.appendChild(btn);
+                }
+            });
+            addCountsToButtons();
+        }
+
+        updateResults(); // Initial load
+        addCountsToButtons();
+
+        // Table sorting
+        const resultsTable = document.getElementById('results-table-sortable');
+        const resultsTbody = resultsTable.querySelector('tbody');
+        const headers = resultsTable.querySelectorAll('th');
+
+        headers.forEach((header, index) => {
+            header.addEventListener('click', () => {
+                const rows = Array.from(resultsTbody.rows);
+                const isAscending = header.classList.contains('asc');
+
+                // Remove sorting classes from all headers
+                headers.forEach(h => h.classList.remove('asc', 'desc'));
+
+                // Toggle sort direction
+                header.classList.toggle('asc', !isAscending);
+                header.classList.toggle('desc', isAscending);
+
+                rows.sort((a, b) => {
+                    const aVal = a.cells[index].textContent.trim();
+                    const bVal = b.cells[index].textContent.trim();
+                    return isAscending ? bVal.localeCompare(aVal) : aVal.localeCompare(bVal);
+                });
+
+                // Reorder rows
+                rows.forEach(row => resultsTbody.appendChild(row));
+            });
+        });
+    </script>
+</body>
+</html>

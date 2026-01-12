@@ -1,0 +1,1274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SFC - Entity Management System - Profile</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&family=Arial:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #128C88;
+            --primary-inverse: #FFFFFF;
+            --bg-color: #FFFFFF;
+            --header-border: #E8E8E8;
+            --text-main: #000000;
+            --text-secondary: #676767;
+            --text-dark: #1E2939;
+            --input-bg: #FAFAFA;
+            --input-border-gradient: linear-gradient(132deg, #04ECD3 1%, rgba(181, 51, 197, 0.69) 100%);
+            --input-shadow: 0px 0px 5.4px 0px #17D9D1;
+            --overlay-shadow: 0px 12px 23.5px 0px rgba(0, 0, 0, 0.08);
+            --filter-bg-active: #128C88;
+            --filter-bg-inactive: rgba(18, 140, 136, 0.05);
+            --divider-color: #E5E7EB;
+            --tooltip-bg: #128C88;
+            --tooltip-tag-bg: #EBFFFE;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #FFFFFF;
+            color: var(--text-dark);
+            padding-top: 100px;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 24px;
+            border-bottom: 1px solid #E8E8E8;
+            height: 80px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background: white;
+            z-index: 1000;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 22px;
+        }
+
+        .breadcrumb-container img {
+            height: 56px;
+        }
+
+        .menu-icon img {
+            height: 14px;
+            cursor: pointer;
+            transition: filter 0.3s ease;
+        }
+
+        .menu-icon:hover img {
+            filter: brightness(0) saturate(100%) invert(41%) sepia(89%) saturate(361%) hue-rotate(146deg) brightness(91%) contrast(85%);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 22px;
+            align-items: center;
+        }
+
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+        }
+
+        .header-center {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 0 20px;
+        }
+
+        .search-input-wrapper {
+            width: 100%;
+            max-width: 600px;
+            position: relative;
+            background: var(--input-bg);
+            border-radius: 50px;
+            padding: 1px;
+            background-image: var(--input-border-gradient);
+            box-shadow: var(--input-shadow);
+            z-index: 20;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .search-input-wrapper:hover {
+            transform: scale(1.01);
+        }
+
+        .search-input-container {
+            background: var(--input-bg);
+            border-radius: 50px;
+            display: flex;
+            align-items: center;
+            padding: 5px 15px;
+            height: 45px;
+        }
+
+        .search-input {
+            flex: 1;
+            border: none;
+            background: transparent;
+            font-size: 16px;
+            padding: 5px 10px;
+            outline: none;
+            color: var(--text-main);
+            font-family: 'Roboto', sans-serif;
+        }
+
+        .search-input::placeholder {
+            color: #000000;
+            opacity: 0.5;
+        }
+
+        .search-button {
+            background-color: var(--primary-color);
+            color: var(--primary-inverse);
+            border: 1px solid #F0F0F0;
+            border-radius: 100px;
+            padding: 0;
+            width: 100px;
+            height: 35px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .search-button:hover {
+            background-color: #0e6e6b;
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(18, 140, 136, 0.3);
+        }
+
+        .nav-item {
+            font-size: 14px;
+            cursor: pointer;
+            text-decoration: none;
+            font-weight: 600;
+            color: #128C88;
+        }
+
+        .nav-item:not(.active) {
+            font-weight: 400;
+            color: #000000;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .notification-container {
+            position: relative;
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+        }
+
+        .notification-bell {
+            width: 18.74px;
+            height: 19.22px;
+        }
+
+        .notification-dot {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 12px;
+            height: 12px;
+            background-color: #FF0000;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-size: 10px;
+        }
+
+        .user-info {
+            color: #158D89;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .mega-menu-container {
+            position: relative;
+        }
+
+        .mega-menu {
+            position: absolute;
+            top: calc(100% + 10px);
+            left: -100px;
+            background-color: #FFFFFF;
+            border-radius: 24px;
+            box-shadow: 23px 41px 41.3px 0px rgba(0, 0, 0, 0.05);
+            padding: 12px;
+            width: 1368px;
+            display: none;
+            z-index: 1001;
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: opacity 0.3s, transform 0.3s;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .mega-menu.visible {
+            display: flex;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .mobile-mega-menu {
+            display: none;
+            position: fixed;
+            top: 80px;
+            left: 0;
+            width: 100%;
+            background: white;
+            border-bottom: 1px solid #E8E8E8;
+            z-index: 1001;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            max-height: 60vh;
+            overflow-y: auto;
+        }
+
+        @media (max-width: 768px) { .mobile-mega-menu { top: 70px; } }
+        @media (max-width: 480px) { .mobile-mega-menu { top: 60px; } }
+
+        .mobile-mega-menu.visible { display: block; }
+
+        .mobile-mega-menu-item {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 16px;
+            border-bottom: 1px solid #f0f0f0;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        .mobile-mega-menu-item:hover { background-color: #f5f5f5; }
+        .mobile-mega-menu-item:last-child { border-bottom: none; }
+        .mobile-mega-menu-item.active { background-color: #F4FBF9; }
+
+        .mobile-mega-menu-icon {
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: #FFFFFF;
+            border: 1px solid #128C88;
+            flex-shrink: 0;
+        }
+
+        .mobile-mega-menu-icon img { width: 16px; height: 16px; }
+
+        .mobile-mega-menu-item.active .mobile-mega-menu-icon,
+        .mobile-mega-menu-item:hover .mobile-mega-menu-icon { background: #128C88; }
+
+        .mobile-mega-menu-item.active .mobile-mega-menu-icon img,
+        .mobile-mega-menu-item:hover .mobile-mega-menu-icon img { filter: brightness(0) invert(1); }
+
+        .mobile-mega-menu-content { flex: 1; }
+        .mobile-mega-menu-title { font-family: 'Arial', sans-serif; font-weight: 700; font-size: 16px; color: #1E293B; margin-bottom: 4px; }
+        .mobile-mega-menu-description { font-family: 'Arial', sans-serif; font-weight: 400; font-size: 12px; color: #575757; line-height: 1.4; }
+
+        .mega-menu-card {
+            width: 254.4px;
+            padding: 32px;
+            border-radius: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 32px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            background: #FFFFFF;
+        }
+
+        .mega-menu-card:hover { background: #F4FBF9; box-shadow: 0px 10px 15px -3px rgba(163, 163, 163, 0.46); }
+        .mega-menu-card.active { background: #F4FBF9; }
+
+        .mega-menu-card-icon {
+            width: 72px;
+            height: 72px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: #FFFFFF;
+            border: 1px solid #128C88;
+            box-shadow: 0px 10px 15px -3px rgba(163, 163, 163, 0.46);
+        }
+
+        .mega-menu-card-icon img { width: 72px; height: 72px; }
+
+        .mega-menu-card.active .mega-menu-card-icon,
+        .mega-menu-card:hover .mega-menu-card-icon { background: #128C88; }
+
+        .mega-menu-card-content { display: flex; flex-direction: column; gap: 16px; }
+        .mega-menu-card-title { font-family: 'Arial', sans-serif; font-weight: 700; font-size: 18px; line-height: 1.3; color: #1E293B; }
+        .mega-menu-card-description { font-family: 'Arial', sans-serif; font-weight: 400; font-size: 14px; line-height: 1.6; color: #575757; }
+
+        .mega-menu-card-arrow {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            width: 16px;
+            height: 16px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .mega-menu-card:hover .mega-menu-card-arrow,
+        .mega-menu-card.active .mega-menu-card-arrow { opacity: 1; }
+
+        .mega-menu-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.3);
+            display: none;
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .mega-menu-overlay.visible { display: block; opacity: 1; }
+
+        main {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 24px 40px;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        /* Top Header Section */
+        .entity-header {
+            background: #FFFFFF;
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 17px 33px;
+            box-shadow: var(--shadow);
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .entity-info-main {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .entity-title-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .entity-title {
+            font-family: 'Arial', sans-serif;
+            font-weight: 900;
+            font-size: 24px;
+            color: var(--primary-color);
+            letter-spacing: -0.03125em;
+        }
+
+        .status-tag-new {
+            background: #FDC700;
+            color: #FFFFFF;
+            font-weight: 700;
+            font-size: 10px;
+            padding: 2px 8px;
+            border-radius: 4px;
+        }
+
+        .entity-meta-grid {
+            display: grid;
+            grid-template-columns: auto auto;
+            column-gap: 48px;
+            row-gap: 8px;
+        }
+
+        .meta-item {
+            display: flex;
+            gap: 8px;
+            font-size: 14px;
+        }
+
+        .meta-label {
+            font-weight: 700;
+            color: var(--text-secondary);
+        }
+
+        .meta-value {
+            color: var(--text-dark);
+        }
+
+        .status-delisted {
+            color: #FB2C36;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .system-ref-box {
+            background: var(--bg-light);
+            border: 1px solid #E2E8F0;
+            border-radius: 14px;
+            padding: 17px;
+            text-align: center;
+            min-width: 158px;
+        }
+
+        .ref-label {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--primary-color);
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            margin-bottom: 4px;
+        }
+
+        .ref-value {
+            font-size: 11px;
+            color: var(--primary-color);
+        }
+
+        /* Navigation Bar */
+        .sub-nav {
+            background: #FFFFFF;
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            padding: 9px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: var(--shadow);
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 4px;
+            background: #F9FAFB;
+            padding: 4px;
+            border-radius: 10px;
+        }
+
+        .nav-btn {
+            padding: 8px 24px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            border: none;
+            background: transparent;
+            color: var(--text-secondary);
+        }
+
+        .nav-btn.active {
+            background: #FFFFFF;
+            color: var(--primary-color);
+            box-shadow: var(--shadow);
+        }
+
+        .search-box {
+            display: flex;
+            align-items: center;
+            background: #F9FAFB;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 8px 16px;
+            width: 240px;
+            gap: 8px;
+        }
+
+        .search-box input {
+            border: none;
+            background: transparent;
+            font-size: 13px;
+            outline: none;
+            width: 100%;
+        }
+
+        /* General Information Section */
+        .info-section {
+            background: #FFFFFF;
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
+
+        .section-header {
+            background: var(--primary-color);
+            padding: 12px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .section-title {
+            color: #FFFFFF;
+            font-size: 14px;
+            font-weight: 700;
+            letter-spacing: 0.025em;
+            text-transform: uppercase;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            padding: 32px;
+            gap: 32px;
+        }
+
+        @media (max-width: 768px) {
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .info-item {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .info-label {
+            font-family: 'Roboto', sans-serif;
+            font-weight: 900;
+            font-size: 13px;
+            color: var(--primary-color);
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+        }
+
+        .info-value {
+            font-family: 'Arial', sans-serif;
+            font-size: 14px;
+            color: var(--text-dark);
+        }
+
+        .info-value.mono {
+            font-weight: 900;
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #FB2C36;
+            opacity: 0.66;
+        }
+
+        /* Tables Section */
+        .tables-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        @media (max-width: 768px) {
+            .tables-row {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .table-container {
+            background: #FFFFFF;
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
+
+        @media (max-width: 768px) {
+            .table-container {
+                overflow-x: auto;
+            }
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead th {
+            background: var(--bg-light);
+            padding: 11px 24px;
+            text-align: left;
+            font-family: 'Roboto', sans-serif;
+            font-weight: 900;
+            font-size: 13px;
+            color: var(--primary-color);
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        tbody td {
+            padding: 15px 24px;
+            font-size: 14px;
+            color: var(--text-dark);
+            border-bottom: 1px solid #F9FAFB;
+        }
+
+        tbody tr:nth-child(even) {
+            background: rgba(249, 250, 251, 0.5);
+        }
+
+        .td-mono {
+            font-family: 'Consolas', monospace;
+            color: #6A7282;
+        }
+
+        .no-records {
+            text-align: center;
+            padding: 32px;
+            color: #D1D5DC;
+            font-weight: 700;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        /* Pagination */
+        .pagination-footer {
+            background: #FFFFFF;
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            padding: 12px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: var(--shadow);
+        }
+
+        .page-controls {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .page-btns {
+            display: flex;
+            gap: 4px;
+        }
+
+        .p-btn {
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            opacity: 0.3;
+        }
+
+        .page-info {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--text-secondary);
+        }
+
+        .display-info {
+            font-family: 'Arial', sans-serif;
+            font-size: 13px;
+            color: var(--primary-color);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        .background-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .shape {
+            position: absolute;
+            background: rgba(18, 140, 136, 0.05);
+            border-radius: 50%;
+            filter: blur(50px);
+        }
+
+        .shape1 { width: 400px; height: 400px; top: 5%; left: 5%; }
+        .shape2 { width: 300px; height: 300px; top: 40%; right: 10%; }
+    </style>
+</head>
+<body>
+    <div class="background-animation">
+        <div class="shape shape1"></div>
+        <div class="shape shape2"></div>
+    </div>
+
+    <header>
+        <div class="header-left">
+            <a href="index.html" class="breadcrumb-container">
+                <img src="assets/breadcrumb.svg" alt="SFC Logo">
+            </a>
+            <div class="mega-menu-container">
+                <div class="menu-icon" id="menuIcon">
+                    <img src="assets/menu_icon.svg" alt="Menu">
+                </div>
+                <div class="mega-menu-overlay" id="megaMenuOverlay"></div>
+                <div class="mega-menu" id="megaMenu">
+                    <div class="mega-menu-card active">
+                        <div class="mega-menu-card-icon"><img src="assets/ce_enquiry.svg" alt="CE Enquiry"></div>
+                        <div class="mega-menu-card-content">
+                            <div class="mega-menu-card-title">CE Enquiry</div>
+                            <div class="mega-menu-card-description">Search and view existing corporate enquiries.</div>
+                        </div>
+                    </div>
+                    <div class="mega-menu-card">
+                        <div class="mega-menu-card-icon"><img src="assets/ce_creation.svg" alt="CE Creation"></div>
+                        <div class="mega-menu-card-content">
+                            <div class="mega-menu-card-title">CE Creation</div>
+                            <div class="mega-menu-card-description">Initiate and create new corporate enquiry requests.</div>
+                        </div>
+                    </div>
+                    <div class="mega-menu-card">
+                        <div class="mega-menu-card-icon"><img src="assets/ce_upload.svg" alt="CE Upload"></div>
+                        <div class="mega-menu-card-content">
+                            <div class="mega-menu-card-title">CE Upload for Stock, ELI & Bond/Notes</div>
+                            <div class="mega-menu-card-description">Upload supporting documents for Stock, ELI, and Bonds.</div>
+                        </div>
+                    </div>
+                    <div class="mega-menu-card">
+                        <div class="mega-menu-card-icon"><img src="assets/ce_report.svg" alt="CE Report"></div>
+                        <div class="mega-menu-card-content">
+                            <div class="mega-menu-card-title">Request/View CE Report</div>
+                            <div class="mega-menu-card-description">Access and generate detailed corporate enquiry reports.</div>
+                        </div>
+                    </div>
+                    <div class="mega-menu-card">
+                        <div class="mega-menu-card-icon"><img src="assets/advanced_address.svg" alt="Advanced Address"></div>
+                        <div class="mega-menu-card-content">
+                            <div class="mega-menu-card-title">Advanced Address Enquiry</div>
+                            <div class="mega-menu-card-description">Comprehensive search tool for global addresses.</div>
+                        </div>
+                    </div>
+                    <div class="mega-menu-card">
+                        <div class="mega-menu-card-icon"><img src="assets/bank_table.svg" alt="Bank Table"></div>
+                        <div class="mega-menu-card-content">
+                            <div class="mega-menu-card-title">Bank Table</div>
+                            <div class="mega-menu-card-description">Maintenance and viewing of the central bank records.</div>
+                        </div>
+                    </div>
+                    <div class="mega-menu-card">
+                        <div class="mega-menu-card-icon"><img src="assets/nationality_table.svg" alt="Nationality Table"></div>
+                        <div class="mega-menu-card-content">
+                            <div class="mega-menu-card-title">Nationality Table Enquiry</div>
+                            <div class="mega-menu-card-description">Query and manage nationality reference data.</div>
+                        </div>
+                    </div>
+                    <div class="mega-menu-card">
+                        <div class="mega-menu-card-icon"><img src="assets/quick_reference.svg" alt="Quick Reference"></div>
+                        <div class="mega-menu-card-content">
+                            <div class="mega-menu-card-title">Quick Reference</div>
+                            <div class="mega-menu-card-description">Instant access to frequently used guidelines.</div>
+                        </div>
+                    </div>
+                    <div class="mega-menu-card">
+                        <div class="mega-menu-card-icon"><img src="assets/contact_list.svg" alt="Contact List"></div>
+                        <div class="mega-menu-card-content">
+                            <div class="mega-menu-card-title">Contact List</div>
+                            <div class="mega-menu-card-description">Direct directory for department support.</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="mobile-mega-menu" id="mobileMegaMenu">
+                    <div class="mobile-mega-menu-item" id="mobileHome">
+                        <div class="mobile-mega-menu-icon"><img src="assets/ce_enquiry.svg" alt="CE Enquiry"></div>
+                        <div class="mobile-mega-menu-content">
+                            <div class="mobile-mega-menu-title">Home</div>
+                            <div class="mobile-mega-menu-description">Back to Home Landing page</div>
+                        </div>
+                    </div>
+                    <div class="mobile-mega-menu-item" id="mobileDashboard">
+                        <div class="mobile-mega-menu-icon"><img src="assets/ce_enquiry.svg" alt="CE Enquiry"></div>
+                        <div class="mobile-mega-menu-content">
+                            <div class="mobile-mega-menu-title">Dashboard</div>
+                            <div class="mobile-mega-menu-description">All your stats at a quick glance</div>
+                        </div>
+                    </div>
+                    <div class="mobile-mega-menu-item">
+                        <div class="mobile-mega-menu-icon"><img src="assets/ce_enquiry.svg" alt="CE Enquiry"></div>
+                        <div class="mobile-mega-menu-content">
+                            <div class="mobile-mega-menu-title">CE Enquiry</div>
+                            <div class="mobile-mega-menu-description">Search and view existing corporate enquiries.</div>
+                        </div>
+                    </div>
+                    <div class="mobile-mega-menu-item">
+                        <div class="mobile-mega-menu-icon"><img src="assets/ce_creation.svg" alt="CE Creation"></div>
+                        <div class="mobile-mega-menu-content">
+                            <div class="mobile-mega-menu-title">CE Creation</div>
+                            <div class="mobile-mega-menu-description">Initiate and create new corporate enquiry requests.</div>
+                        </div>
+                    </div>
+                    <div class="mobile-mega-menu-item">
+                        <div class="mobile-mega-menu-icon"><img src="assets/ce_upload.svg" alt="CE Upload"></div>
+                        <div class="mobile-mega-menu-content">
+                            <div class="mobile-mega-menu-title">CE Upload for Stock, ELI & Bond/Notes</div>
+                            <div class="mobile-mega-menu-description">Upload supporting documents for Stock, ELI, and Bonds.</div>
+                        </div>
+                    </div>
+                    <div class="mobile-mega-menu-item">
+                        <div class="mobile-mega-menu-icon"><img src="assets/ce_report.svg" alt="CE Report"></div>
+                        <div class="mobile-mega-menu-content">
+                            <div class="mobile-mega-menu-title">Request/View CE Report</div>
+                            <div class="mobile-mega-menu-description">Access and generate detailed corporate enquiry reports.</div>
+                        </div>
+                    </div>
+                    <div class="mobile-mega-menu-item">
+                        <div class="mobile-mega-menu-icon"><img src="assets/advanced_address.svg" alt="Advanced Address"></div>
+                        <div class="mobile-mega-menu-content">
+                            <div class="mobile-mega-menu-title">Advanced Address Enquiry</div>
+                            <div class="mobile-mega-menu-description">Comprehensive search tool for global addresses.</div>
+                        </div>
+                    </div>
+                    <div class="mobile-mega-menu-item">
+                        <div class="mobile-mega-menu-icon"><img src="assets/bank_table.svg" alt="Bank Table"></div>
+                        <div class="mobile-mega-menu-content">
+                            <div class="mobile-mega-menu-title">Bank Table</div>
+                            <div class="mobile-mega-menu-description">Maintenance and viewing of the central bank records.</div>
+                        </div>
+                    </div>
+                    <div class="mobile-mega-menu-item">
+                        <div class="mobile-mega-menu-icon"><img src="assets/nationality_table.svg" alt="Nationality Table"></div>
+                        <div class="mobile-mega-menu-content">
+                            <div class="mobile-mega-menu-title">Nationality Table Enquiry</div>
+                            <div class="mobile-mega-menu-description">Query and manage nationality reference data.</div>
+                        </div>
+                    </div>
+                    <div class="mobile-mega-menu-item">
+                        <div class="mobile-mega-menu-icon"><img src="assets/quick_reference.svg" alt="Quick Reference"></div>
+                        <div class="mobile-mega-menu-content">
+                            <div class="mobile-mega-menu-title">Quick Reference</div>
+                            <div class="mobile-mega-menu-description">Instant access to frequently used guidelines.</div>
+                        </div>
+                    </div>
+                    <div class="mobile-mega-menu-item">
+                        <div class="mobile-mega-menu-icon"><img src="assets/contact_list.svg" alt="Contact List"></div>
+                        <div class="mobile-mega-menu-content">
+                            <div class="mobile-mega-menu-title">Contact List</div>
+                            <div class="mobile-mega-menu-description">Direct directory for department support.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <nav class="nav-links">
+                <a href="index.html" class="nav-item" id="navHome">Home</a>
+                <a href="dashboard.html" class="nav-item" id="navDashboard">Dashboard</a>
+            </nav>
+        </div>
+        <div class="header-center">
+            <div class="search-input-wrapper">
+                <div class="search-input-container">
+                    <input type="text" class="search-input" id="searchInput" placeholder="Search entities by name, reference number, or type...">
+                    <button class="search-button">Search</button>
+                </div>
+            </div>
+        </div>
+        <div class="header-right">
+            <div class="notification-container">
+                <img src="assets/notification_bell.svg" class="notification-bell" alt="Notifications">
+                <div class="notification-dot">2</div>
+            </div>
+            <div class="user-info">General User</div>
+        </div>
+    </header>
+
+    <main>
+        <!-- Entity Header -->
+        <section class="entity-header">
+            <div class="entity-info-main">
+                <div class="entity-title-row">
+                    <h1 class="entity-title">AIQ526 - xAxMxN x0x0 [ Warrant ]</h1>
+                    <span class="status-tag-new">NEW</span>
+                </div>
+                <div class="entity-meta-grid">
+                    <div class="meta-item">
+                        <span class="meta-label">Product Name :</span>
+                        <span class="meta-value">xAxMxN x0x0</span>
+                    </div>
+                    <div class="meta-item">
+                        <span class="meta-label">Status :</span>
+                        <span class="meta-value status-delisted">Delisted</span>
+                    </div>
+                    <div class="meta-item" style="grid-column: span 2;">
+                        <span class="meta-label">Securities Owner Unit :</span>
+                        <span class="meta-value">EN Created By (Creation date) : (07/02/2003)</span>
+                    </div>
+                </div>
+            </div>
+            <div class="system-ref-box">
+                <div class="ref-label">System Reference</div>
+                <div class="ref-value">AIQ526_REF_070203</div>
+            </div>
+        </section>
+
+        <!-- Sub Navigation -->
+        <section class="sub-nav">
+            <div class="nav-buttons">
+                <button class="nav-btn active">CE Basic Info</button>
+                <button class="nav-btn">Case/Inspection Involvement</button>
+                <button class="nav-btn">Related CE</button>
+            </div>
+            <div class="search-box">
+                <img src="assets/search_icon.svg" alt="" style="width:16px; opacity:0.5;">
+                <input type="text" placeholder="Search...">
+            </div>
+        </section>
+
+        <!-- General Information -->
+        <section class="info-section">
+            <div class="section-header">
+                <h2 class="section-title">General Information</h2>
+                <img src="assets/info_icon.svg" alt="" style="width:16px;">
+            </div>
+            <div class="info-grid">
+                <div class="info-item">
+                    <span class="info-label">Securities Code</span>
+                    <span class="info-value">00652</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Issuer</span>
+                    <span class="info-value">Cxcxox xoxdxnxs Lxmxtxd - ABX612</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Category</span>
+                    <span class="info-value">American Call Warrants</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Status</span>
+                    <div class="status-indicator">
+                        <span class="info-value">DELISTED</span>
+                        <div class="status-dot"></div>
+                    </div>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Issue Price</span>
+                    <span class="info-value">0.00000</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Issue Size</span>
+                    <span class="info-value">194,645,202</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Board of Listing</span>
+                    <span class="info-value">Main</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Launch Date</span>
+                    <span class="info-value">21/06/2002</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Listing Date</span>
+                    <span class="info-value">--</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Maturity Date</span>
+                    <span class="info-value">30/06/2004</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Currency</span>
+                    <span class="info-value">Hong Kong Dollar</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Lot Size</span>
+                    <span class="info-value">40,000</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Effective Date</span>
+                    <span class="info-value">21/01/2009</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Exercise Price</span>
+                    <span class="info-value">1.00000</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Entitlement Ratio</span>
+                    <span class="info-value">1.0000000</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Tables Row 1 -->
+        <div class="tables-row">
+            <div class="table-container">
+                <div class="section-header">
+                    <h2 class="section-title">Underlying Component</h2>
+                    <img src="assets/info_icon.svg" alt="" style="width:16px;">
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Component</th>
+                            <th>Name</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="info-value" style="color:var(--primary-color)">ABX613</td>
+                            <td style="color:#4A5565">Cxcxox xoxdxnxs Lxmxtxd</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="table-container">
+                <div class="section-header">
+                    <h2 class="section-title">Outstanding Issue</h2>
+                    <img src="assets/info_icon.svg" alt="" style="width:16px;">
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Issue Size</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="td-mono">17/05/2004</td>
+                            <td class="info-value">193,478,613</td>
+                        </tr>
+                        <tr>
+                            <td class="td-mono">20/04/2004</td>
+                            <td class="info-value">193,478,925</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Warrant Code History -->
+        <section class="table-container">
+            <div class="section-header">
+                <h2 class="section-title">Warrant Code History</h2>
+                <img src="assets/info_icon.svg" alt="" style="width:16px;">
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Code</th>
+                        <th>Name</th>
+                        <th>Effective Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="info-value">00652</td>
+                        <td style="color:#4A5565">HARMONY W8406</td>
+                        <td class="td-mono">25/08/2002</td>
+                    </tr>
+                    <tr>
+                        <td class="info-value">00652</td>
+                        <td style="color:#4A5565">Robert Fleming & Co. Ltd. - HSBC Warrants Jun 1997</td>
+                        <td class="td-mono">08/02/1996</td>
+                    </tr>
+                    <tr>
+                        <td class="info-value">00652</td>
+                        <td style="color:#4A5565">Tom Fat Hing Fung (Holdings) Ltd. Warrants 1995</td>
+                        <td class="td-mono">02/11/1992</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- History Sections -->
+        <div class="tables-row">
+            <div class="table-container">
+                <div class="section-header">
+                    <h2 class="section-title">Warrant Name History</h2>
+                    <img src="assets/info_icon.svg" alt="" style="width:16px;">
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Former Name</th>
+                            <th>Chinese Name</th>
+                            <th>Valid Until</th>
+                            <th>Last Modified</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td colspan="4" class="no-records">No records found</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="table-container">
+                <div class="section-header">
+                    <h2 class="section-title">Warrant Suspension History</h2>
+                    <img src="assets/info_icon.svg" alt="" style="width:16px;">
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Suspension Date / Time</th>
+                            <th>Resumption Date / Time</th>
+                            <th>Reason</th>
+                            <th>Exceptional Price</th>
+                            <th>Initiate</th>
+                            <th>Last Modified</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td colspan="6" class="no-records">No records found</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Price History -->
+        <section class="table-container">
+            <div class="section-header">
+                <h2 class="section-title">Price History</h2>
+                <img src="assets/info_icon.svg" alt="" style="width:16px;">
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Effective Date</th>
+                        <th>Exercise Price</th>
+                        <th>Entitlement Ratio</th>
+                        <th>Last Modified</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="td-mono">21/01/2009</td>
+                        <td class="info-value" style="letter-spacing:-0.05em">1.00000</td>
+                        <td class="info-value" style="letter-spacing:-0.05em">1.0000000</td>
+                        <td style="font-size:13px; color:var(--text-secondary)">31/05/2013 21:35</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- Pagination Footer -->
+        <footer class="pagination-footer">
+            <div class="page-controls">
+                <div class="page-btns">
+                    <span class="p-btn"><<</span>
+                    <span class="p-btn"><</span>
+                </div>
+                <span class="page-info">Page 1 of 1</span>
+                <div class="page-btns">
+                    <span class="p-btn" style="opacity:0.3">></span>
+                    <span class="p-btn" style="opacity:0.3">>></span>
+                </div>
+            </div>
+            <div class="display-info">Displaying 1 - 1 of 1</div>
+        </footer>
+    </main>
+
+    <script>
+        const searchInput = document.getElementById('searchInput');
+        const searchButton = document.querySelector('.search-button');
+
+        function performSearch() {
+            const query = searchInput.value.trim();
+            if (query) {
+                window.location.href = `search_result.html?query=${encodeURIComponent(query)}`;
+            }
+        }
+
+        searchInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                performSearch();
+            }
+        });
+
+        searchButton.addEventListener('click', performSearch);
+
+        const menuIcon = document.getElementById('menuIcon');
+        const megaMenu = document.getElementById('megaMenu');
+        const mobileMegaMenu = document.getElementById('mobileMegaMenu');
+        const megaMenuOverlay = document.getElementById('megaMenuOverlay');
+
+        let isMegaMenuOpen = false;
+        function toggleMegaMenu() {
+            isMegaMenuOpen = !isMegaMenuOpen;
+            const isMobile = window.innerWidth <= 768;
+            if (isMobile) {
+                mobileMegaMenu.classList.toggle('visible', isMegaMenuOpen);
+            } else {
+                megaMenu.classList.toggle('visible', isMegaMenuOpen);
+                megaMenuOverlay.classList.toggle('visible', isMegaMenuOpen);
+            }
+        }
+
+        menuIcon.addEventListener('click', (e) => { e.stopPropagation(); toggleMegaMenu(); });
+        megaMenuOverlay.addEventListener('click', toggleMegaMenu);
+
+        document.querySelectorAll('.mega-menu-card, .mobile-mega-menu-item').forEach(item => {
+            item.addEventListener('click', () => {
+                document.querySelectorAll('.mega-menu-card, .mobile-mega-menu-item').forEach(i => i.classList.remove('active'));
+                item.classList.add('active');
+                if (item.id === 'mobileDashboard') {
+                    window.location.href = 'dashboard.html';
+                } else if (item.id === 'mobileHome') {
+                    window.location.href = 'index.html';
+                }
+                setTimeout(toggleMegaMenu, 200);
+            });
+        });
+
+        document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && isMegaMenuOpen) toggleMegaMenu(); });
+
+        window.addEventListener('resize', () => {
+            if (isMegaMenuOpen) {
+                const isMobile = window.innerWidth <= 768;
+                mobileMegaMenu.classList.toggle('visible', isMobile);
+                megaMenu.classList.toggle('visible', !isMobile);
+                megaMenuOverlay.classList.toggle('visible', !isMobile);
+            }
+        });
+    </script>
+</body>
+</html>
