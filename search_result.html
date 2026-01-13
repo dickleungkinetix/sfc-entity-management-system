@@ -512,11 +512,27 @@
             overflow-y: auto;
         }
 
-        @media (max-width: 768px) { .mobile-mega-menu { top: 70px; } }
-        @media (max-width: 480px) { .mobile-mega-menu { top: 60px; } }
-
-         .breadcrumb-container img {
+        @media (max-width: 768px) { 
+            .mobile-mega-menu { top: 70px; } 
+                     .breadcrumb-container img {
             display:none;
+
+                    .header-right {
+            display:none;
+        }
+        }
+        }
+        @media (max-width: 480px) { 
+            
+            .mobile-mega-menu { top: 60px; } 
+                     .breadcrumb-container img {
+            display:none;
+
+                    .header-right {
+            display:none;
+        }
+        }
+    
         }
 
         .header-center {
@@ -528,9 +544,7 @@
         }
 
 
-        .header-right {
-            display:none;
-        }
+
 
         header {
             padding: 0px 10px;
@@ -1072,6 +1086,10 @@
         const savedTags = localStorage.getItem('searchTagRecord');
         if (savedTags) {
             selectedTags = JSON.parse(savedTags);
+            // Ensure Business is always selected
+            if (!selectedTags.includes('Business')) {
+                selectedTags.push('Business');
+            }
             document.querySelectorAll('.tag-btn').forEach(btn => {
                 const tag = btn.getAttribute('data-tag');
                 if (selectedTags.includes(tag)) {
