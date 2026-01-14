@@ -199,14 +199,14 @@ document.addEventListener('DOMContentLoaded', function() {
             header.addEventListener('click', () => {
                 const type = header.getAttribute('data-type') || 'string';
                 const rows = Array.from(activitiesTbody.rows);
-                const isAscending = header.classList.contains('asc');
+                const isAscending = header.classList.contains('sort-asc');
 
                 // Remove sorting classes from all headers
-                headers.forEach(h => h.classList.remove('asc', 'desc'));
+                headers.forEach(h => h.classList.remove('sort-asc', 'sort-desc'));
 
                 // Toggle sort direction
-                header.classList.toggle('asc', !isAscending);
-                header.classList.toggle('desc', isAscending);
+                header.classList.toggle('sort-asc', !isAscending);
+                header.classList.toggle('sort-desc', isAscending);
 
                 rows.sort((a, b) => {
                     const aVal = a.cells[index].textContent.trim();
@@ -348,14 +348,14 @@ document.addEventListener('DOMContentLoaded', function() {
         headers.forEach((header, index) => {
             header.addEventListener('click', () => {
                 const rows = Array.from(resultsTbody.rows);
-                const isAscending = header.classList.contains('asc');
+                const isAscending = header.classList.contains('sort-asc');
 
                 // Remove sorting classes from all headers
-                headers.forEach(h => h.classList.remove('asc', 'desc'));
+                headers.forEach(h => h.classList.remove('sort-asc', 'sort-desc'));
 
                 // Toggle sort direction
-                header.classList.toggle('asc', !isAscending);
-                header.classList.toggle('desc', isAscending);
+                header.classList.toggle('sort-asc', !isAscending);
+                header.classList.toggle('sort-desc', isAscending);
 
                 rows.sort((a, b) => {
                     const aVal = a.cells[index].textContent.trim();
