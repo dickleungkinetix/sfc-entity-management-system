@@ -6,6 +6,8 @@ import { EntityCard } from './components/EntityCard';
 import { EntityDetailPage } from './components/EntityDetailPage';
 import { Footer } from './components/Footer';
 import { ChatWidget } from './components/ChatWidget';
+import { ProtectionPage } from './components/ProtectionPage';
+import { useAuth } from './contexts/AuthContext';
 import { Grid, List, ChevronDown } from 'lucide-react';
 import {
   DropdownMenu,
@@ -75,6 +77,8 @@ const allEntities = [
 ];
 
 export default function App() {
+  const { isAuthenticated, loading } = useAuth();
+
   const [entities, setEntities] = useState(allEntities);
   const [filteredEntities, setFilteredEntities] = useState(allEntities);
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
@@ -132,6 +136,21 @@ export default function App() {
     }
   };
 
+  // Show loading spinner while checking authentication
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
+      </div>
+    );
+  }
+
+  // Show protection page if not authenticated
+  if (!isAuthenticated) {
+    return <ProtectionPage />;
+  }
+
+  // Show main app if authenticated
   return (
     <div className="relative size-full bg-white overflow-y-auto">
       <div className="size-full">
